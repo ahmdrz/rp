@@ -41,9 +41,9 @@ func main() {
   weight := 1
   
   proxy := rp.New()
-	proxy.Log(true)
+  proxy.Log(true)
   
-	// Add will append a new endpoint to rp
+  // Add will append a new endpoint to rp
   // Round-Robin only works if you add more than 1 endpoint
   // weights must be positive and greater than 0
   proxy.Add(newURL(target), weight)
