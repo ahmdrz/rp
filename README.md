@@ -1,2 +1,7 @@
-# reverse-proxy
-Reverse-proxy with Weighted Round Robin load-balancer.
+# RP
+
+> Reverse-Proxy (rp) with Weighted Round Robin load-balancer.
+
+---
+
+
