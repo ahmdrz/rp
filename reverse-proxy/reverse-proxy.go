@@ -1,6 +1,7 @@
 package rp
 
 import (
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -107,6 +108,9 @@ func (rp *ReverseProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rp *ReverseProxy) ListenAndServe(addr string) error {
+	if len(rp.rr.conns) == 0 {
+		return fmt.Errorf("not enough remote addresses")
+	}
 	return http.ListenAndServe(addr, rp)
 }
 
