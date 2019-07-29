@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/url"
 
-	"github.com/ahmdrz/rp"
+	rp "github.com/ahmdrz/rp/reverse-proxy"
 )
 
 func newURL(addr string) *url.URL {
