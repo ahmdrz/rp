@@ -26,7 +26,7 @@ Example of configuration file
 ```yaml
 listenaddr: 0.0.0.0:8080
 
-# you can change ip lookup resolvers using
+# you can change domain name servers using
 dnslist: ["8.8.8.8", "4.2.2.4"]
 
 targets:
