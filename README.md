@@ -26,6 +26,9 @@ Example of configuration file
 ```yaml
 listenaddr: 0.0.0.0:8080
 
+# you can change ip lookup resolvers using
+dnslist: ["8.8.8.8", "4.2.2.4"]
+
 targets:
 - address: http://api.server1.com
   weight: 3
@@ -67,6 +70,9 @@ func main() {
   // Round-Robin only works if you add more than 1 endpoint
   // weights must be positive and greater than 0
   proxy.Add(newURL("https://api.server1.com"), 1)
+
+  // You can also change DNS if you want using
+  proxy.ChangeDNS("8.8.8.8"...)
 	
   proxy.ListenAndServe("0.0.0.0:8080")
 }

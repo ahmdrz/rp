@@ -1,6 +1,7 @@
 package rp
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net"
@@ -9,6 +10,8 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/bogdanovich/dns_resolver"
 )
 
 type proxyConnection struct {
@@ -46,6 +49,34 @@ type ReverseProxy struct {
 func New() *ReverseProxy {
 	return &ReverseProxy{
 		rr: newRoundRobin(),
+	}
+}
+
+func (rp *ReverseProxy) ChangeDNS(domainServers ...string) {
+	if len(domainServers) == 0 {
+		return
+	}
+
+	if rp.log {
+		log.Println("using domain servers:", domainServers)
+	}
+
+	dialer := &net.Dialer{
+		DualStack: true,
+	}
+	http.DefaultTransport.(*http.Transport).DialContext = func(ctx context.Context, network, addr string) (net.Conn, error) {
+		remote := strings.Split(addr, ":")
+		if net.ParseIP(remote[0]).String() == remote[0] {
+			resolver := dns_resolver.New(domainServers)
+			resolver.RetryTimes = 5
+			ip, err := resolver.LookupHost(remote[0])
+			if err != nil {
+				return nil, err
+			}
+			remote[0] = ip[0].String()
+		}
+		addr = strings.Join(remote, ":")
+		return dialer.DialContext(ctx, network, addr)
 	}
 }
 

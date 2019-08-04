@@ -20,6 +20,7 @@ type target struct {
 type config struct {
 	ListenAddr string
 	Targets    []target
+	DNSList    []string
 }
 
 func (c *config) Save(path string) error {
@@ -55,6 +56,7 @@ func (a *Application) serve(c *cli.Context) error {
 
 	proxy := rp.New()
 	proxy.Log(a.verbose)
+	proxy.ChangeDNS(cfg.DNSList...)
 
 	for _, item := range cfg.Targets {
 		targetURL, err := url.Parse(item.Address)

@@ -1,4 +1,0 @@
-listenaddr: 0.0.0.0:8085
-targets:
-- address: http://gstatic.com
-  weight: 1
