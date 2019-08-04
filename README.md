@@ -18,16 +18,28 @@ $ go get -u github.com/ahmdrz/rp
 Running reverse proxy without balancer:
 
 ```
-$ rp -l "localhost:8080" -r "https://api.server1.com" -v true
+$ rp --config rpconfig.yaml --verbose serve
 ```
 
-Running reverse proxy with balancer:
+Example of configuration file
+
+```yaml
+listenaddr: 0.0.0.0:8080
+
+targets:
+- address: http://api.server1.com
+  weight: 3
+- address: http://api.server2.com
+  weight: 2
+```
+
+Generate default configuration file
 
 ```
-$ rp -l "localhost:8080" -r "https://api.server1.com,https://api.server2.com" -v true
+$ rp --config rpconfig.yaml generate
 ```
 
-### Example
+### API
 
 ```go
 package main
@@ -63,13 +75,15 @@ func main() {
 
 ### Using Docker
 
+```dockerfile
+FROM ahmdrz/rp:latest
+COPY rpconfig.yaml .
+EXPOSE 8080
+CMD ["rp", "--verbose"]
 ```
-$ docker pull ahmdrz/rp:latest
-$ docker run -p 8888:8888 -e REMOTE="https://api.server1.com,https://api.server2.com" ahmdrz/rp:latest
-```
-
 
 ### Todo
 
+- [x] Better CLI Application
 - [ ] Failover Solution
 - [ ] Health Check
