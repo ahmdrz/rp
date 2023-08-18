@@ -11,9 +11,15 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+type healthCheck struct {
+	Attemps  uint
+	Endpoint string
+}
+
 type target struct {
-	Address string
-	Weight  int
+	Address     string
+	Weight      int
+	HealthCheck *healthCheck
 }
 
 type config struct {
@@ -62,7 +68,17 @@ func (a *Application) serve(c *cli.Context) error {
 		if err != nil {
 			return err
 		}
-		proxy.Add(targetURL, item.Weight)
+
+		var itemHealthCheck *rp.HealthCheck = nil
+		if item.HealthCheck != nil {
+			healthCheckEndpoint, err := url.Parse(item.HealthCheck.Endpoint)
+			if err != nil {
+				return err
+			}
+
+			itemHealthCheck = rp.NewHealthCheck(healthCheckEndpoint, item.HealthCheck.Attemps)
+		}
+		proxy.Add(targetURL, item.Weight, itemHealthCheck)
 	}
 
 	log.Printf("Starting reverse-proxy server on %s ...", cfg.ListenAddr)

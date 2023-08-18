@@ -6,51 +6,12 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
 	"strings"
 	"time"
 
 	"github.com/bogdanovich/dns_resolver"
 )
-
-type proxyConnection struct {
-	reverseProxy *httputil.ReverseProxy
-	target       *url.URL
-	weight       int
-}
-
-func (p *proxyConnection) String() string {
-	return p.target.String()
-}
-
-func (p *proxyConnection) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	r.URL.Host = p.target.Host
-	r.URL.Scheme = p.target.Scheme
-	r.Host = p.target.Host
-	r.Header.Set("X-Forwarded-Host", r.Header.Get("Host"))
-	p.reverseProxy.Transport = &http.Transport{
-		DialContext: (&net.Dialer{
-			Timeout:   10 * time.Second,
-			KeepAlive: 10 * time.Second,
-			DualStack: true,
-		}).DialContext,
-		MaxIdleConns:          10,
-		IdleConnTimeout:       30 * time.Second,
-		TLSHandshakeTimeout:   5 * time.Second,
-		ExpectContinueTimeout: 1 * time.Second,
-	}
-
-	p.reverseProxy.ServeHTTP(w, r)
-}
-
-func newProxyConnection(target *url.URL, weight int) *proxyConnection {
-	return &proxyConnection{
-		reverseProxy: httputil.NewSingleHostReverseProxy(target),
-		target:       target,
-		weight:       weight,
-	}
-}
 
 type ReverseProxy struct {
 	rr  *roundRobin
@@ -95,8 +56,8 @@ func (rp *ReverseProxy) Log(mode bool) {
 	rp.log = mode
 }
 
-func (rp *ReverseProxy) Add(target *url.URL, weight int) {
-	rp.rr.Add(newProxyConnection(target, weight))
+func (rp *ReverseProxy) Add(target *url.URL, weight int, healthCheck *HealthCheck) {
+	rp.rr.Add(newProxyConnection(target, weight, healthCheck))
 }
 
 type statusWriter struct {
