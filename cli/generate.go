@@ -18,7 +18,7 @@ func (a *Application) generate(c *cli.Context) error {
 	cfg := &config{
 		ListenAddr: "0.0.0.0:8080",
 		Targets: []target{
-			target{
+			{
 				Address: "http://gstatic.com",
 				Weight:  1,
 			},

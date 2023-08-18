@@ -1,8 +1,11 @@
-all: 
-	@go build -i -race -o rp
+build: 
+	@go build -o rp
+
 clean:
 	rm -f rp
-install: all
+
+install: build
 	cp rp /usr/local/bin	
+
 uninstall: 
 	rm -f /usr/local/bin/rp

@@ -2,7 +2,6 @@ package cli
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/url"
 	"os"
@@ -28,11 +27,11 @@ func (c *config) Save(path string) error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(path, bytes, 0755)
+	return os.WriteFile(path, bytes, 0755)
 }
 
 func loadConfig(path string) (*config, error) {
-	bytes, err := ioutil.ReadFile(path)
+	bytes, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
